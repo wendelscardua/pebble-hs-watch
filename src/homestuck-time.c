@@ -10,28 +10,30 @@ PBL_APP_INFO(MY_UUID,
 			 RESOURCE_ID_IMAGE_MENU_ICON,
 			 APP_INFO_WATCH_FACE);
 
-Window s_window;
-TextLayer s_text;
+Window window;
+TextLayer text_layer;
 
 #define TIME_STR_BUFFER_BYTES 32
-char s_time_str_buffer[TIME_STR_BUFFER_BYTES];
+char time_text_buffer[TIME_STR_BUFFER_BYTES];
 
 void handle_tick(AppContextRef ctx, PebbleTickEvent *event) {
-    string_format_time(s_time_str_buffer, TIME_STR_BUFFER_BYTES, "%H:%M:%S", event->tick_time);
-    text_layer_set_text(&s_text, s_time_str_buffer);
+    string_format_time(time_text_buffer, TIME_STR_BUFFER_BYTES, "%H:%M:%S", event->tick_time);
+    text_layer_set_text(&text_layer, time_text_buffer);
 }
 
 void handle_init(AppContextRef ctx) {
     (void)ctx;
 
-    window_init(&s_window, "Fenestrated Plane");
-    window_stack_push(&s_window, true /* Animated */);
+    window_init(&window, "Fenestrated Plane");
+    window_stack_push(&window, true /* Animated */);
 
-    text_layer_init(&s_text, s_window.layer.frame);
-	text_layer_set_font(&s_text, fonts_get_system_font(FONT_KEY_GOTHAM_42_MEDIUM_NUMBERS));
-    strcpy(s_time_str_buffer, "");
-    text_layer_set_text(&s_text, s_time_str_buffer);
-    layer_add_child(&s_window.layer, &s_text.layer);
+    text_layer_init(&text_layer, window.layer.frame);
+	text_layer_set_font(&text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+	text_layer_set_text_color(&text_layer, GColorWhite);
+	text_layer_set_background_color(&text_layer, GColorBlack);
+    strcpy(time_text_buffer, "");
+    text_layer_set_text(&text_layer, time_text_buffer);
+    layer_add_child(&window.layer, &text_layer.layer);
 }
 
 void pbl_main(void *params) {
