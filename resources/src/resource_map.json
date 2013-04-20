@@ -1,11 +1,31 @@
-
-{"friendlyVersion": "dev_1.0",
- "versionDefName": "APP_RESOURCES",
- "media": [
-	   {
-	    "type":"png",
-	    "defName":"IMAGE_MENU_ICON",
-	    "file":"images/menu_homestuck_time_icon.png"
-	   }
-	  ]
+{
+	"friendlyVersion": "dev_1.0",
+	"versionDefName": "APP_RESOURCES",
+	"media": [
+		{
+	    	"type":"png",
+	    	"defName":"IMAGE_MENU_ICON",
+	    	"file":"images/menu_homestuck_time_icon.png"
+	   	},
+		{
+			"type":"png",
+			"defName":"IMAGE_BACKGROUND_0",
+			"file":"images/background_0.png"
+		},
+		{
+			"type":"png",
+			"defName":"IMAGE_BACKGROUND_1",
+			"file":"images/background_1.png"
+		},
+		{
+			"type":"png",
+			"defName":"IMAGE_BACKGROUND_2",
+			"file":"images/background_2.png"
+		},
+		{
+			"type":"png",
+			"defName":"IMAGE_BACKGROUND_3",
+			"file":"images/background_3.png"
+		}
+	]
 }
