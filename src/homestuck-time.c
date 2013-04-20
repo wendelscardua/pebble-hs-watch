@@ -30,6 +30,7 @@ char time_text_buffer[TIME_STR_BUFFER_BYTES];
 void set_container_image(BmpContainer *bmp_container, const int resource_id, GPoint origin) {
 
 	layer_remove_from_parent(&bmp_container->layer.layer);
+	layer_remove_from_parent(&text_layer.layer);
 	bmp_deinit_container(bmp_container);
 
 	bmp_init_container(resource_id, bmp_container);
@@ -40,6 +41,7 @@ void set_container_image(BmpContainer *bmp_container, const int resource_id, GPo
 	layer_set_frame(&bmp_container->layer.layer, frame);
 
 	layer_add_child(&window.layer, &bmp_container->layer.layer);
+	layer_add_child(&window.layer, &text_layer.layer);
 }
 
 void handle_tick(AppContextRef ctx, PebbleTickEvent *event) {
@@ -55,15 +57,18 @@ void handle_init(AppContextRef ctx) {
     window_init(&window, "Fenestrated Plane");
     window_stack_push(&window, true /* Animated */);
 
+	resource_init_current_app(&APP_RESOURCES);
+
 	// background time symbol
 	bmp_init_container(BACKGROUND_RESOURCE_IDS[3], &background_image);
     layer_add_child(&window.layer, &background_image.layer.layer);
 
 
-    text_layer_init(&text_layer, window.layer.frame);
+    text_layer_init(&text_layer, GRect(28, 54, 100, 32));
 	text_layer_set_font(&text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_color(&text_layer, GColorWhite);
 	text_layer_set_background_color(&text_layer, GColorBlack);
+	
     strcpy(time_text_buffer, "");
     text_layer_set_text(&text_layer, time_text_buffer);
     layer_add_child(&window.layer, &text_layer.layer);
