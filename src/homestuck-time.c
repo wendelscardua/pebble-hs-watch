@@ -64,7 +64,7 @@ void handle_init(AppContextRef ctx) {
     layer_add_child(&window.layer, &background_image.layer.layer);
 
 
-    text_layer_init(&text_layer, GRect(28, 54, 100, 32));
+    text_layer_init(&text_layer, GRect(36, 65, 80, 32));
 	text_layer_set_font(&text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_color(&text_layer, GColorWhite);
 	text_layer_set_background_color(&text_layer, GColorBlack);
