@@ -17,7 +17,7 @@ TextLayer s_text;
 char s_time_str_buffer[TIME_STR_BUFFER_BYTES];
 
 void handle_tick(AppContextRef ctx, PebbleTickEvent *event) {
-    string_format_time(s_time_str_buffer, TIME_STR_BUFFER_BYTES, "%I:%M:%S %p", event->tick_time);
+    string_format_time(s_time_str_buffer, TIME_STR_BUFFER_BYTES, "%H:%M:%S", event->tick_time);
     text_layer_set_text(&s_text, s_time_str_buffer);
 }
 
@@ -28,6 +28,7 @@ void handle_init(AppContextRef ctx) {
     window_stack_push(&s_window, true /* Animated */);
 
     text_layer_init(&s_text, s_window.layer.frame);
+	text_layer_set_font(&s_text, fonts_get_system_font(FONT_KEY_GOTHAM_42_MEDIUM_NUMBERS));
     strcpy(s_time_str_buffer, "");
     text_layer_set_text(&s_text, s_time_str_buffer);
     layer_add_child(&s_window.layer, &s_text.layer);
