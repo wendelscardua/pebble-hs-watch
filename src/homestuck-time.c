@@ -1,94 +1,96 @@
-#include "pebble_os.h"
-#include "pebble_app.h"
-#include "pebble_fonts.h"
+#include <pebble.h>
 
+static Window *s_window;
+static TextLayer *s_text_layer;
 
-#define MY_UUID { 0xDD, 0xA8, 0x71, 0x95, 0x63, 0x86, 0x40, 0xE7, 0x90, 0x19, 0x6C, 0xD8, 0x98, 0xC2, 0xAB, 0xC5 }
-PBL_APP_INFO(MY_UUID,
-			 "Homestuck Time", "Wendel Scardua",
-			 1, 0, /* App version */
-			 RESOURCE_ID_IMAGE_MENU_ICON,
-			 APP_INFO_WATCH_FACE);
+static BitmapLayer *s_background_layer;
+static GBitmap *s_background_bitmap[4];
 
-Window window;
-TextLayer text_layer;
+static int tick_tock = 0;
 
-BmpContainer background_image;
+static void update_time() {
+  // Get a tm structure
+  time_t temp = time(NULL);
+  struct tm *tick_time = localtime(&temp);
 
-const int BACKGROUND_RESOURCE_IDS[] = {
-	RESOURCE_ID_IMAGE_BACKGROUND_0,
-	RESOURCE_ID_IMAGE_BACKGROUND_1,
-	RESOURCE_ID_IMAGE_BACKGROUND_2,
-	RESOURCE_ID_IMAGE_BACKGROUND_3,
-};
+  // Write the current hours and minutes into a buffer
+  static char s_buffer[11];
+  strftime(s_buffer, sizeof(s_buffer), clock_is_24h_style() ?
+                                          "%H:%M:%S" : "%I:%M:%S", tick_time);
 
-static int bg_count = 0;
+  // Display this time on the TextLayer
+  text_layer_set_text(s_text_layer, s_buffer);
 
-#define TIME_STR_BUFFER_BYTES 32
-char time_text_buffer[TIME_STR_BUFFER_BYTES];
-
-void set_container_image(BmpContainer *bmp_container, const int resource_id, GPoint origin) {
-
-	layer_remove_from_parent(&bmp_container->layer.layer);
-	layer_remove_from_parent(&text_layer.layer);
-	bmp_deinit_container(bmp_container);
-
-	bmp_init_container(resource_id, bmp_container);
-
-	GRect frame = layer_get_frame(&bmp_container->layer.layer);
-	frame.origin.x = origin.x;
-	frame.origin.y = origin.y;
-	layer_set_frame(&bmp_container->layer.layer, frame);
-
-	layer_add_child(&window.layer, &bmp_container->layer.layer);
-	layer_add_child(&window.layer, &text_layer.layer);
+  tick_tock = (tick_tock + 1) % 4;
+  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap[tick_tock]);
 }
 
-void handle_tick(AppContextRef ctx, PebbleTickEvent *event) {
-	set_container_image(&background_image, BACKGROUND_RESOURCE_IDS[bg_count], GPoint(0, 0));
-	bg_count = (bg_count + 1) % 4;
-    string_format_time(time_text_buffer, TIME_STR_BUFFER_BYTES, "%H:%M:%S", event->tick_time);
-    text_layer_set_text(&text_layer, time_text_buffer);
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  update_time();
 }
 
-void handle_init(AppContextRef ctx) {
-    (void)ctx;
+static void window_load(Window *window) {
+  Layer *window_layer = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(window_layer);
 
-    window_init(&window, "Fenestrated Plane");
-    window_stack_push(&window, true /* Animated */);
+  // Create GBitmap
+  s_background_bitmap[0] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_0);
+  s_background_bitmap[1] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_1);
+  s_background_bitmap[2] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_2);
+  s_background_bitmap[3] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_3);
 
-	resource_init_current_app(&APP_RESOURCES);
+  // Create BitmapLayer to display the GBitmap
+  s_background_layer = bitmap_layer_create(bounds);
 
-	// background time symbol
-	bmp_init_container(BACKGROUND_RESOURCE_IDS[3], &background_image);
-    layer_add_child(&window.layer, &background_image.layer.layer);
+  // Set the bitmap onto the layer and add to the window
+  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap[0]);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
 
-
-    text_layer_init(&text_layer, GRect(36, 65, 80, 32));
-	text_layer_set_font(&text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-	text_layer_set_text_color(&text_layer, GColorWhite);
-	text_layer_set_background_color(&text_layer, GColorBlack);
-	
-    strcpy(time_text_buffer, "");
-    text_layer_set_text(&text_layer, time_text_buffer);
-    layer_add_child(&window.layer, &text_layer.layer);
+  // Text layer
+  s_text_layer = text_layer_create(GRect(0, (bounds.size.h - 32) / 2, bounds.size.w, 32));
+  text_layer_set_background_color(s_text_layer, GColorClear);
+  text_layer_set_text_color(s_text_layer, GColorWhite);
+  text_layer_set_text(s_text_layer, "04:13:00");
+  text_layer_set_font(s_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_text_alignment(s_text_layer, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(s_text_layer));
 }
 
+static void window_unload(Window *window) {
+  // Destroy GBitmap
+  gbitmap_destroy(s_background_bitmap[0]);
+  gbitmap_destroy(s_background_bitmap[1]);
+  gbitmap_destroy(s_background_bitmap[2]);
+  gbitmap_destroy(s_background_bitmap[3]);
 
-void handle_deinit(AppContextRef ctx) {
-	(void)ctx;
+  // Destroy BitmapLayer
+  bitmap_layer_destroy(s_background_layer);
 
-    bmp_deinit_container(&background_image);
-
+  // Destroy TextLayer
+  text_layer_destroy(s_text_layer);
 }
-void pbl_main(void *params) {
-    PebbleAppHandlers handlers = {
-        .init_handler = &handle_init,
-	    .deinit_handler = &handle_deinit,
-        .tick_info = {
-            .tick_handler = &handle_tick,
-            .tick_units = SECOND_UNIT
-        }
-    };
-    app_event_loop(params, &handlers);
+
+static void init(void) {
+  s_window = window_create();
+  window_set_window_handlers(s_window, (WindowHandlers) {
+    .load = window_load,
+    .unload = window_unload,
+  });
+  const bool animated = true;
+  window_stack_push(s_window, animated);
+  update_time();
+  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+}
+
+static void deinit(void) {
+  window_destroy(s_window);
+}
+
+int main(void) {
+  init();
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", s_window);
+
+  app_event_loop();
+  deinit();
 }
