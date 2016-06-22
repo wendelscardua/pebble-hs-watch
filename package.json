@@ -1,0 +1,48 @@
+{
+  "name": "homestuck-time",
+  "author": "Wendel Scardua",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Homestuck Time",
+    "uuid": "72434e5c-0bf2-4143-b799-967ff7bec26e",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BG_0",
+          "file": "images/background_0.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BG_1",
+          "file": "images/background_1.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BG_2",
+          "file": "images/background_2.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BG_3",
+          "file": "images/background_3.png"
+        }
+      ]
+    }
+  }
+}
