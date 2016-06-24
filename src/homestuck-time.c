@@ -33,6 +33,9 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
+  // Set window background
+  window_set_background_color(window, GColorBlack);
+
   // Create GBitmap
   s_background_bitmap[0] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_0);
   s_background_bitmap[1] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_1);
