@@ -6,6 +6,8 @@ static TextLayer *s_text_layer;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap[4];
 
+static GFont s_font;
+
 static int tick_tock = 0;
 
 static void update_time() {
@@ -36,6 +38,11 @@ static void window_load(Window *window) {
   // Set window background
   window_set_background_color(window, GColorBlack);
 
+  // Load the custom font
+  s_font = fonts_load_custom_font(
+      resource_get_handle(RESOURCE_ID_VERDANA_FONT_20));
+
+
   // Create GBitmap
   s_background_bitmap[0] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_0);
   s_background_bitmap[1] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BG_1);
@@ -54,7 +61,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_text_layer, GColorClear);
   text_layer_set_text_color(s_text_layer, GColorWhite);
   text_layer_set_text(s_text_layer, "04:13:00");
-  text_layer_set_font(s_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_font(s_text_layer, s_font);
   text_layer_set_text_alignment(s_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_text_layer));
 }

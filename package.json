@@ -41,6 +41,12 @@
           "type": "bitmap",
           "name": "IMAGE_BG_3",
           "file": "images/background_3.png"
+        },
+        {
+          "type": "font",
+          "characterRegex": "[:0-9]",
+          "name": "VERDANA_FONT_20",
+          "file": "fonts/verdana.ttf"
         }
       ]
     }
