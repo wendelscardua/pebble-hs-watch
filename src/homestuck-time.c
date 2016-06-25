@@ -57,7 +57,7 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
 
   // Text layer
-  s_text_layer = text_layer_create(GRect(0, (bounds.size.h - 32) / 2, bounds.size.w, 32));
+  s_text_layer = text_layer_create(GRect(0, (bounds.size.h - 24) / 2, bounds.size.w, 24));
   text_layer_set_background_color(s_text_layer, GColorClear);
   text_layer_set_text_color(s_text_layer, GColorWhite);
   text_layer_set_text(s_text_layer, "04:13:00");
